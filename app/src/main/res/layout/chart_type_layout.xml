@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:orientation="horizontal">
+    <RadioButton
+        android:id="@+id/fenshi_radio"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@drawable/selector_chart_type"
+        android:button="@null"
+        android:checked="true"
+        android:gravity="center"
+        android:text="分时"
+        android:textColor="@android:color/white" />
+
+    <RadioButton
+        android:id="@+id/day_radio"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@drawable/selector_chart_type"
+        android:button="@null"
+        android:gravity="center"
+        android:text="日K"
+        android:textColor="@android:color/white" />
+
+    <RadioButton
+        android:id="@+id/week_radio"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@drawable/selector_chart_type"
+        android:button="@null"
+        android:gravity="center"
+        android:text="周K"
+        android:textColor="@android:color/white" />
+
+    <RadioButton
+        android:id="@+id/month_radio"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@drawable/selector_chart_type"
+        android:button="@null"
+        android:gravity="center"
+        android:text="月K"
+        android:textColor="@android:color/white" />
+</RadioGroup>

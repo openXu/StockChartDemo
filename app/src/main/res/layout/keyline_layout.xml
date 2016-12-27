@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp">
+
+        <LinearLayout
+            android:id="@+id/avagelinear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="66dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/keyline_m5_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/keyline_m10_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dp"
+                android:text=""
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/keyline_m20_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="1"
+                android:gravity="left"
+                android:text=""
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/keyline_enddate_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <com.openxu.chartlib.view.ChartContainerView
+            android:id="@+id/landkeylinelayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignRight="@+id/avagelinear"
+            android:layout_below="@+id/avagelinear">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <com.openxu.chartlib.kline.chart.KeyLineChart
+                    android:id="@+id/klinechart"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <com.openxu.chartlib.kline.chart.TechnologyChart
+                    android:id="@+id/techchart"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <com.openxu.chartlib.minute.chart.FocusChart
+                android:id="@+id/focusview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+
+        </com.openxu.chartlib.view.ChartContainerView>
+
+        <include
+            android:id="@+id/select_item_lienar"
+            layout="@layout/keyline_types_view"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_alignTop="@+id/landkeylinelayout"
+            android:layout_marginLeft="6dp"
+            android:layout_toRightOf="@+id/landkeylinelayout" />
+    </RelativeLayout>
+
+    <include layout="@layout/layout_loading" />
+</FrameLayout>

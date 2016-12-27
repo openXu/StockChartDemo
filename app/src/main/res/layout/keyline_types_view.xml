@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/shape_border_gray">
+
+    <RadioGroup
+        android:id="@+id/fq_group"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/qfq_btn"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:button="@null"
+            android:gravity="center"
+            android:text="前复权"
+            android:textColor="@color/color_keylinetype_selector"
+            android:textSize="12sp"
+            android:checked="true"/>
+
+        <RadioButton
+            android:id="@+id/bfq_btn"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:button="@null"
+            android:gravity="center"
+            android:text="不复权"
+            android:textColor="@color/color_keylinetype_selector"
+            android:textSize="12sp" />
+
+        <RadioButton
+            android:id="@+id/hfq_btn"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:button="@null"
+            android:gravity="center"
+            android:text="后复权"
+            android:textColor="@color/color_keylinetype_selector"
+            android:textSize="12sp" />
+
+    </RadioGroup>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#cccccc" />
+
+    <RadioGroup
+        android:id="@+id/tech_group"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/vol_btn"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:button="@null"
+            android:gravity="center"
+            android:text="VOL"
+            android:textColor="@color/color_keylinetype_selector"
+            android:textSize="12sp"
+            android:checked="true"/>
+
+        <RadioButton
+            android:id="@+id/macd_btn"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:button="@null"
+            android:gravity="center"
+            android:text="MACD"
+            android:textColor="@color/color_keylinetype_selector"
+            android:textSize="12sp" />
+
+        <RadioButton
+            android:id="@+id/kdj_btn"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:button="@null"
+            android:gravity="center"
+            android:text="KDJ"
+            android:textColor="@color/color_keylinetype_selector"
+            android:textSize="12sp" />
+
+        <RadioButton
+            android:id="@+id/rsi_btn"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:button="@null"
+            android:gravity="center"
+            android:text="RSI"
+            android:textSize="12sp"
+            android:textColor="@color/color_keylinetype_selector"/>
+
+    </RadioGroup>
+</LinearLayout>
