@@ -1,4 +1,4 @@
-package com.openxu.chartlib.kline;
+package com.openxu.chartlib.request;
 
 
 import android.util.Log;
@@ -12,11 +12,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.openxu.chartlib.config.Constants;
-import com.openxu.chartlib.kline.entity.KLineParame;
-import com.openxu.chartlib.kline.entity.KLineTechParam;
-import com.openxu.chartlib.kline.entity.KLineType;
-import com.openxu.chartlib.kline.entity.KeyLineItem;
-import com.openxu.chartlib.kline.entity.KlineResult;
+import com.openxu.chartlib.bean.KeylineData;
+import com.openxu.chartlib.bean.KLineParame;
+import com.openxu.chartlib.bean.KLineTechParam;
+import com.openxu.chartlib.bean.KLineType;
+import com.openxu.chartlib.bean.KeyLineItem;
+import com.openxu.chartlib.bean.KlineResult;
+import com.openxu.chartlib.manager.KeyLineManager;
 import com.openxu.chartlib.testdata.TestData;
 import com.openxu.chartlib.utils.CommonUtil;
 import com.openxu.chartlib.utils.DateUtil;

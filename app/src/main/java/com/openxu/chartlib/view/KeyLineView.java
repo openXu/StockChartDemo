@@ -1,4 +1,4 @@
-package com.openxu.chartlib.kline;
+package com.openxu.chartlib.view;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -12,16 +12,13 @@ import android.widget.TextView;
 
 import com.openxu.chart.R;
 import com.openxu.chartlib.config.Constants;
-import com.openxu.chartlib.kline.chart.KeyLineChart;
-import com.openxu.chartlib.kline.chart.TechnologyChart;
-import com.openxu.chartlib.kline.entity.KLineParame;
-import com.openxu.chartlib.kline.entity.KLineTechParam;
-import com.openxu.chartlib.kline.entity.KLineType;
-import com.openxu.chartlib.kline.entity.KeyLineItem;
-import com.openxu.chartlib.minute.chart.FocusChart;
+import com.openxu.chartlib.bean.KLineParame;
+import com.openxu.chartlib.bean.KLineTechParam;
+import com.openxu.chartlib.bean.KLineType;
+import com.openxu.chartlib.bean.KeyLineItem;
+import com.openxu.chartlib.manager.KeyLineManager;
+import com.openxu.chartlib.request.KeylineRequest;
 import com.openxu.chartlib.utils.TouchEventUtil;
-import com.openxu.chartlib.view.Chart;
-import com.openxu.chartlib.view.ChartContainerView;
 
 import java.util.List;
 

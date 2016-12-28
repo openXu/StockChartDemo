@@ -10,7 +10,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.openxu.chartlib.config.Constants;
-import com.openxu.chartlib.kline.entity.KLineParame;
+import com.openxu.chartlib.bean.KLineParame;
 import com.openxu.chartlib.utils.CommonUtil;
 import com.openxu.chartlib.utils.TouchEventUtil;
 

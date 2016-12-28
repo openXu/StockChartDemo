@@ -1,4 +1,4 @@
-package com.openxu.chartlib.kline.entity;
+package com.openxu.chartlib.bean;
 
 /**
  * author : openXu

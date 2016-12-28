@@ -1,23 +1,29 @@
 package com.openxu.chart;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
-import com.openxu.chartlib.StockChartManager;
+import com.openxu.chartlib.manager.BaseManager;
 
 public class ChartDemoActivity extends Activity {
-    private StockChartManager chartManager;
+    private BaseManager chartManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chart_demo);
-        //初始化股票图表管理器，参数为当前activity对象、股票代码
-        chartManager=new StockChartManager(this, "sz000002");
-        chartManager.show();
-    }
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        chartManager.destroryRequest();
+        findViewById(R.id.btn_minute).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ChartDemoActivity.this, MinuteActivity.class));
+            }
+        });
+        findViewById(R.id.btn_kline).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ChartDemoActivity.this, KlineActivity.class));
+            }
+        });
     }
 }

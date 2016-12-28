@@ -1,4 +1,4 @@
-package com.openxu.chartlib.minute;
+package com.openxu.chartlib.view;
 
 import android.content.Context;
 import android.view.Gravity;
@@ -9,13 +9,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.openxu.chart.R;
+import com.openxu.chartlib.bean.MinuteParame;
+import com.openxu.chartlib.bean.MinutesBean;
+import com.openxu.chartlib.bean.PankouData;
 import com.openxu.chartlib.config.Constants;
-import com.openxu.chartlib.minute.bean.MinuteParame;
-import com.openxu.chartlib.minute.bean.MinutesBean;
-import com.openxu.chartlib.minute.bean.PankouData;
-import com.openxu.chartlib.minute.chart.FocusChart;
-import com.openxu.chartlib.minute.chart.MinuteBarChart;
-import com.openxu.chartlib.minute.chart.MinuteHourChart;
 import com.openxu.chartlib.utils.CommonUtil;
 import com.openxu.chartlib.utils.TouchEventUtil;
 

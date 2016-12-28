@@ -1,10 +1,6 @@
-package com.openxu.chartlib.kline;
+package com.openxu.chartlib.bean;
 
 import com.openxu.chartlib.config.Constants;
-import com.openxu.chartlib.kline.entity.KLineTechItem;
-import com.openxu.chartlib.kline.entity.KLineTechParam;
-import com.openxu.chartlib.kline.entity.KLineType;
-import com.openxu.chartlib.kline.entity.KeyLineItem;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -41,6 +41,7 @@ public class Constants {
     public static final int MUNITE_NUMBER=242;  //60*4 一分钟一个，四小时
 
     //Handler消息
+    public final static int BaseInfo = 0x00;
     public final static int FocusCancelFlag = 0x01;  //焦点结束
     public final static int FocusChangeFlag = 0x02;  //焦点位置变化
     public final static int ChartRefresh = 0x03;     //请求数据后刷新数据
@@ -66,9 +67,9 @@ public class Constants {
 
     /**大小*/
     //默认的K线或者分时竖屏状态下的高度dip
-    public static int defaultChartHeight = 120;
+    public static int defaultChartHeight = 100;
     //竖屏状态下成交量图和技术指标图的高度dip
-    public static int defaultChartHeightL = 60;
+    public static int defaultChartHeightL = 50;
     //网格线宽度dip
     public static float gridlinewidth=0.3f;
 

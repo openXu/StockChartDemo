@@ -1,4 +1,4 @@
-package com.openxu.chartlib.minute.chart;
+package com.openxu.chartlib.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -10,14 +10,12 @@ import android.graphics.Shader;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
+import com.openxu.chartlib.bean.MinuteParame;
+import com.openxu.chartlib.bean.MinutesBean;
 import com.openxu.chartlib.config.Constants;
-import com.openxu.chartlib.minute.bean.MinuteParame;
-import com.openxu.chartlib.minute.bean.MinutesBean;
 import com.openxu.chartlib.utils.CommonUtil;
 import com.openxu.chartlib.utils.GlFontUtil;
-import com.openxu.chartlib.utils.LogUtil;
 import com.openxu.chartlib.utils.TouchEventUtil;
-import com.openxu.chartlib.view.Chart;
 
 import java.util.List;
 
@@ -29,7 +27,7 @@ import java.util.List;
  * project : StockChart
  * class name : MinuteHourChart
  * version : 1.0
- * class describe：分时图
+ * class describe：分时图表控件
  */
 public class MinuteHourChart extends Chart {
 
@@ -154,29 +152,19 @@ public class MinuteHourChart extends Chart {
      */
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        //图表要么定义具体的宽高值，要么就是match_content填充父窗体
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        //图表宽度配置为wrap_content的时候处理为填充父窗体，宽度的测量不需要重写
+        //图表高度配置为wrap_content的时候给定一个默认高度
         int specMode = MeasureSpec.getMode(heightMeasureSpec);
         int specSize = MeasureSpec.getSize(heightMeasureSpec);
-        LogUtil.w(TAG, "MeasureSpec.EXACTLY="+MeasureSpec.EXACTLY);
-        LogUtil.w(TAG, "MeasureSpec.AT_MOST="+MeasureSpec.AT_MOST);
-        LogUtil.w(TAG, "MeasureSpec.UNSPECIFIED="+MeasureSpec.UNSPECIFIED);
-        LogUtil.w(TAG, "分时图specMode="+specMode);
-        LogUtil.w(TAG, "分时图specSize="+specSize);
         int height;
         if (specMode == MeasureSpec.EXACTLY) {
-            //如果布局中使用match_content，填充父窗体
-            //如果是竖屏，使用默认高度 和 父窗体剩余高度的最小值
-            //如果需要在布局文件中设置具体的高度值（比如200dip），此处可修改为height = specSize;
+            //match_content、xxdip、weight的情况，直接使用父控件建议的高度
+            height = specSize;
+        } else{
+            //当使用wrap_content时，分时图使用默认高度和剩余高度的最小值，而不是填充整个父布局。
             height = Math.min(Constants.defaultChartHeight, specSize);
-        } else if (specMode == MeasureSpec.AT_MOST) {
-            //当使用wrap_content时（竖屏的情况minute_port.xml），分时图使用默认高度，而不是填充整个父布局。
-            //当前是竖屏时，高度为默认高度 和 剩余高度的 最小值
-            height = Math.min(Constants.defaultChartHeight, specSize);
-        } else {
-            height = Constants.defaultChartHeight;
         }
-        LogUtil.w(TAG, "分时图height="+height);
+        //设置控件宽高，宽度由View默认处理，高度为重新计算的高度
         setMeasuredDimension(getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec),
                 height);
     }
@@ -200,7 +188,6 @@ public class MinuteHourChart extends Chart {
     }
 
     private void computVars() {
-
         //Y轴方向网格线之间距离 = 总高度 - 时刻表高度 - 字体间距*2
         distanceY = (getHeight() - GlFontUtil.getFontHeight(Constants.labelPaint) -
                 (Constants.S_LABLE_CHART_DIS*2)) / 4;
@@ -211,11 +198,6 @@ public class MinuteHourChart extends Chart {
         //图表的高度 = 总高度 - 时间刻度高度 - 字体间距
         lineheight = getHeight() - GlFontUtil.getFontHeight(Constants.labelPaint)
                 - Constants.S_LABLE_CHART_DIS*2;
-
-        LogUtil.i(TAG, "distanceY="+distanceY);
-        LogUtil.i(TAG, "distanceX="+distanceX);
-        LogUtil.i(TAG, "lineheight="+lineheight);
-        LogUtil.i(TAG, "start="+start);
     }
 
     /**1、绘制图表格子线*/
@@ -227,6 +209,7 @@ public class MinuteHourChart extends Chart {
             path.reset();
             x = start + i * distanceX;
             switch (i){
+                //两边的网格线颜色稍微亮一点
                 case 0:   //分时图左边网格线
                     gridlinePaint.setColor(Constants.C_AROUND_LINE);
                     canvas.drawLine(x, 0, x, lineheight, gridlinePaint);

@@ -64,20 +64,20 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <com.openxu.chartlib.kline.chart.KeyLineChart
+                <com.openxu.chartlib.view.KeyLineChart
                     android:id="@+id/klinechart"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1" />
 
-                <com.openxu.chartlib.kline.chart.TechnologyChart
+                <com.openxu.chartlib.view.TechnologyChart
                     android:id="@+id/techchart"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
             </LinearLayout>
 
-            <com.openxu.chartlib.minute.chart.FocusChart
+            <com.openxu.chartlib.view.FocusChart
                 android:id="@+id/focusview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />

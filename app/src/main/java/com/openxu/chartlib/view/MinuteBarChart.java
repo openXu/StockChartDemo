@@ -1,4 +1,4 @@
-package com.openxu.chartlib.minute.chart;
+package com.openxu.chartlib.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -10,12 +10,11 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 import com.openxu.chartlib.config.Constants;
-import com.openxu.chartlib.minute.bean.MinuteParame;
-import com.openxu.chartlib.minute.bean.MinutesBean;
+import com.openxu.chartlib.bean.MinuteParame;
+import com.openxu.chartlib.bean.MinutesBean;
 import com.openxu.chartlib.utils.CommonUtil;
 import com.openxu.chartlib.utils.GlFontUtil;
 import com.openxu.chartlib.utils.TouchEventUtil;
-import com.openxu.chartlib.view.Chart;
 
 import java.util.List;
 
@@ -118,7 +117,7 @@ public class MinuteBarChart extends Chart {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        isDrawFinished = false;
+       /* isDrawFinished = false;
 
         initFrameRect();
         drawGridLine(canvas);
@@ -128,7 +127,7 @@ public class MinuteBarChart extends Chart {
         }
         drawLabelY(canvas);
         drawBars(canvas);
-        isDrawFinished = true;
+        isDrawFinished = true;*/
     }
 
     /**1、初始化图表矩形*/

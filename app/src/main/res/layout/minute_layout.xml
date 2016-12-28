@@ -51,19 +51,21 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
                     <!--分时图-->
-                    <com.openxu.chartlib.minute.chart.MinuteHourChart
+                    <com.openxu.chartlib.view.MinuteHourChart
                         android:id="@+id/minutechart"
                         android:layout_width="match_parent"
-                        android:layout_height="30dip"/>
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"/>
                     <!--状态图-->
-                    <com.openxu.chartlib.minute.chart.MinuteBarChart
+                    <com.openxu.chartlib.view.MinuteBarChart
                         android:id="@+id/barchart"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"/>
                 </LinearLayout>
 
                 <!--焦点图-->
-                <com.openxu.chartlib.minute.chart.FocusChart
+                <com.openxu.chartlib.view.FocusChart
                     android:id="@+id/focuschart"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />

@@ -1,4 +1,4 @@
-package com.openxu.chartlib.minute.chart;
+package com.openxu.chartlib.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -8,8 +8,8 @@ import android.graphics.PointF;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.openxu.chartlib.kline.entity.KeyLineItem;
-import com.openxu.chartlib.minute.bean.MinutesBean;
+import com.openxu.chartlib.bean.KeyLineItem;
+import com.openxu.chartlib.bean.MinutesBean;
 import com.openxu.chartlib.utils.CommonUtil;
 
 

@@ -1,4 +1,4 @@
-package com.openxu.chartlib.kline.entity;
+package com.openxu.chartlib.bean;
 
 import java.io.Serializable;
 

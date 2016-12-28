@@ -1,4 +1,4 @@
-package com.openxu.chartlib.minute.bean;
+package com.openxu.chartlib.bean;
 
 import java.io.Serializable;
 

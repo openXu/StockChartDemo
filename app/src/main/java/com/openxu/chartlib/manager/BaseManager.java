@@ -1,34 +1,24 @@
-package com.openxu.chartlib;
+package com.openxu.chartlib.manager;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.openxu.chart.R;
+import com.openxu.chartlib.bean.KeyLineItem;
+import com.openxu.chartlib.bean.MinutesBean;
+import com.openxu.chartlib.bean.PankouData;
 import com.openxu.chartlib.bean.StockBaseInfo;
-import com.openxu.chartlib.callback.BasicResultCallBack;
+import com.openxu.chartlib.bean.StockBaseResult;
 import com.openxu.chartlib.config.Constants;
-import com.openxu.chartlib.kline.KeyLineManager;
-import com.openxu.chartlib.kline.entity.KeyLineItem;
-import com.openxu.chartlib.manager.BaseChartManager;
-import com.openxu.chartlib.minute.MinuteManager;
-import com.openxu.chartlib.minute.bean.MinutesBean;
-import com.openxu.chartlib.minute.bean.PankouData;
-import com.openxu.chartlib.request.StockBaseRequest;
+import com.openxu.chartlib.testdata.TestData;
 import com.openxu.chartlib.utils.CommonUtil;
+import com.openxu.chartlib.utils.JSONUtil;
 import com.openxu.chartlib.utils.LogUtil;
-import com.openxu.chartlib.utils.ToastAlone;
-import com.zhy.http.okhttp.OkHttpUtils;
-
-import java.util.concurrent.TimeUnit;
-
-import okhttp3.OkHttpClient;
 
 /**
  * author : openXu
@@ -38,15 +28,14 @@ import okhttp3.OkHttpClient;
  * project : StockChart
  * class name : StockChartManager
  * version : 1.0
- * class describe：股票图表库操作入口类
- * 控制行情图的请求，展示，切换，销毁等操作以及顶部栏的展示和隐藏，数据更新等。
+ * class describe：图标管理器基类，负责股票基本面信息请求和展示
  */
-public class StockChartManager implements RadioGroup.OnCheckedChangeListener {
-    private String TAG = "StockChartManager";
+public abstract class BaseManager {
+    public String TAG = "StockChartManager";
 
     /**展示的activity以及其activity布局*/
-    private Activity activity;
-    private ViewGroup rootView;
+    public Activity activity;
+    public ViewGroup rootView;
     /**顶部lable控件，展示股票基本信息*/
     private TextView tv_top_name, tv_top_code, tv_top_stop,
             tv_top_price, tv_top_price_addvalue, tv_top_price_addp,
@@ -54,93 +43,66 @@ public class StockChartManager implements RadioGroup.OnCheckedChangeListener {
             tv_top_vol, tv_top_low, tv_top_turnover, tv_top_amplitude;
     private LinearLayout ll_top_price;
 
-    private RadioGroup radioGroup;   //图表类型切换
-
-    private StockBaseRequest stockBaseRequest;    //股票基本信息请求
-
     private StockBaseInfo gpInfo;        //股票基本数据
-    private String symbol;               //股票代码
-    private boolean iszhishu = false;    //是否是指数
+    public String symbol;               //股票代码
+    public boolean iszhishu = false;    //是否是指数
+    public float y_price = Constants.EPSILON;    //昨收价格
     private int status = 1;              //股票状态 01：正常开始
     private String price;
     private float raiseValue, raisePer;
 
-    private BaseChartManager baseChartManager;    //当前正在显示的图表的管理器
-    private KeyLineManager keyLineManager;        //K线图管理器
-    private MinuteManager minuteManager;          //分时图管理器
-    /*四种图表类型*/
+    /*图表类型*/
     public static final int MINUTETYPE = 0;
-    public static final int KLINETYPE_DAY = 0X01;
-    public static final int KLINETYPE_WEEK = 0X02;
-    public static final int KLINETYPE_MONTH = 0X03;
-    private int type = MINUTETYPE;       //当前展示的图标类型
+    public static final int KLINETYPE = 0X01;
+    public int type;       //当前展示的图标类型
 
-    float y_price = Constants.EPSILON;    //昨收价格
+    /**设置加载进度view的显示状态*/
+    public abstract void setLoadingViewVisibilty(int Visibilty);
+    public abstract void showChart();
+    public abstract void cancelRequest();
 
     /**
      * 管理器构造方法
      * @param activity 图表展示的activity
      * @param symbol 股票代码
      */
-    public StockChartManager(final Activity activity, String symbol) {
+    public BaseManager(final Activity activity, String symbol) {
+        TAG = getClass().getSimpleName();
         //找到activity中根窗口mDecor中id为content的容器，然后获取其第一个子控件，也就是整个activity的布局
         this.rootView = (ViewGroup) ((ViewGroup)activity.findViewById(android.R.id.content)).getChildAt(0);
         this.activity = activity;
         this.symbol = symbol;
         //初始化顶部基本信息相关控件
         initTopLable(rootView.findViewById(R.id.layoutBasicInfo));
-        //初始化网络请求组件
-        OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .connectTimeout(10000L, TimeUnit.MILLISECONDS)
-                .readTimeout(10000L, TimeUnit.MILLISECONDS)
-                .build();
-        OkHttpUtils.initClient(okHttpClient);
-
-        //初始化K线图和分时图的管理器
-        keyLineManager = new KeyLineManager(rootView);
-        minuteManager = new MinuteManager(rootView);
-        //设置焦点变化监听，当手指滑动到不同位置时，改变对应的顶部股票数据
-        keyLineManager.setOnTopLableChangeListener(listener);
-        minuteManager.setOnTopLableChangeListener(listener);
-        //初始化图表切换控件，并设置选择监听
-        radioGroup = (RadioGroup) rootView.findViewById(R.id.switchradiogroup);
-        radioGroup.setOnCheckedChangeListener(this);
-        //默认开始显示分时图
-        baseChartManager = minuteManager;
-
-        //初始化股票基本信息数据请求类
-        stockBaseRequest = new StockBaseRequest(symbol, new BasicResultCallBack() {
-            @Override
-            public void callback(StockBaseInfo stockBaseInfo) {
-                //请求成功后展示股票基本信息
-                showBaseInfo(stockBaseInfo);
-            }
-        });
-
     }
 
     /**展示入口方法*/
     public void show() {
-        baseChartManager.setLoadingViewVisibilty(View.VISIBLE);
-        if (!CommonUtil.isConnected(rootView.getContext())) {
-            //显示loading
-            baseChartManager.setLoadingViewVisibilty(View.GONE);
-            ToastAlone.show("网络错误");
-            return;
-        }
-        //根据股票代码，请求相关数据
-        stockBaseRequest.requestBasicData();
+        setLoadingViewVisibilty(View.VISIBLE);
+        //TODO 模拟请求股票基本数据
+        new Thread(){
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                    String response= TestData.StockBaseData;
+                    gpInfo = JSONUtil.jsonToBean(response,StockBaseResult.class).getData();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //请求成功后展示股票基本信息
+                            showBaseInfo();
+                        }
+                    });
+                }catch (Exception e){
+                }
+            }
+        }.start();
     }
 
     /**展示股票基本信息*/
-    private void showBaseInfo(StockBaseInfo gpInfo) {
-        if (gpInfo == null) {
-            baseChartManager.setLoadingViewVisibilty(View.GONE);
-            return;
-        }
-        this.gpInfo = gpInfo;
+    private void showBaseInfo() {
         LogUtil.v(TAG, "股票基本信息："+gpInfo);
-
         if (!TextUtils.isEmpty(gpInfo.getYesterday_price())||
                 !TextUtils.isEmpty(gpInfo.getOpen())) {
             //获取昨收价
@@ -167,56 +129,9 @@ public class StockChartManager implements RadioGroup.OnCheckedChangeListener {
         //将数据显示在顶部
         updateTopLableByMinute(null, true);
         //为管理器设置必要参数
-        keyLineManager.setParams(gpInfo.getSymbol());
         iszhishu = gpInfo.getType().equals("2");
-        minuteManager.setParams(gpInfo.getSymbol(), y_price, iszhishu);
-        //展示相应的图标（分时图or K线图）
-        switchType(type);
-    }
 
-    /**
-     * 切换图表（分时，日K，周K，月K）
-     * @param type
-     */
-    public void switchType(int type) {
-        this.type = type;
-        baseChartManager.cancelRequest();
-        this.type = type;
-        if (type == MINUTETYPE) {
-            //将当前展示的管理器切换为分时图管理器
-            baseChartManager = minuteManager;
-            //如果当前type是分时图，那么找到分时图的布局让其显示，K线图隐藏
-            rootView.findViewById(R.id.minutelayout).setVisibility(View.VISIBLE);
-            rootView.findViewById(R.id.keylinelayout).setVisibility(View.GONE);
-            if (gpInfo != null && status == 2) {
-                minuteManager.setStopStatus();
-                updateTopLableByStop();
-                return;
-            }
-        } else {
-            //将当前展示的管理器切换为K线图管理器
-            baseChartManager = keyLineManager;
-            rootView.findViewById(R.id.keylinelayout).setVisibility(View.VISIBLE);
-            rootView.findViewById(R.id.minutelayout).setVisibility(View.GONE);
-            switch (type) {
-                case KLINETYPE_DAY:
-                    keyLineManager.switchKlineType(KeyLineManager.K.daily);
-                    break;
-                case KLINETYPE_MONTH:
-                    keyLineManager.switchKlineType(KeyLineManager.K.month);
-                    break;
-                case KLINETYPE_WEEK:
-                    keyLineManager.switchKlineType(KeyLineManager.K.week);
-                    break;
-            }
-        }
-        //如果基本吗数据没有获取到 加载基本面数据
-        if (gpInfo == null) {
-            show();
-            return;
-        }
-        /**调用相应图标的管理的show()方法，开始请求相应的数据*/
-        baseChartManager.show();
+        showChart();
     }
 
     /********************************顶部基本信息相关start**********************************/
@@ -384,40 +299,13 @@ public class StockChartManager implements RadioGroup.OnCheckedChangeListener {
 
 
     /********************************顶部基本信息相关over**********************************/
-    /** 图表切换*/
-    @Override
-    public void onCheckedChanged(RadioGroup group, int checkedId) {
-        if (checkedId == R.id.fenshi_radio) {
-            //展示分时图
-            switchType(StockChartManager.MINUTETYPE);
-        } else if (checkedId == R.id.day_radio) {
-            //展示日K
-            switchType(StockChartManager.KLINETYPE_DAY);
-        } else if (checkedId == R.id.week_radio) {
-            //展示周K
-            switchType(StockChartManager.KLINETYPE_WEEK);
-        } else if (checkedId == R.id.month_radio) {
-            //展示月K
-            switchType(StockChartManager.KLINETYPE_MONTH);
-        }
-    }
-
-
-    /**
-     *
-     * @param outState
-     */
-    public void saveInstanceState(Bundle outState) {
-        if (type == MINUTETYPE) return;
-        keyLineManager.saveInstanceState(outState);
-    }
 
     public interface OnFocusChangeListener {
         void onPankouChange(PankouData.Data data);
-
         void onfocusChange(boolean isCancel, KeyLineItem keyLineItem, MinutesBean minutesBean);
     }
-    OnFocusChangeListener listener = new OnFocusChangeListener() {
+
+    public OnFocusChangeListener listener = new OnFocusChangeListener() {
 
         @Override
         public void onPankouChange(PankouData.Data data) {
@@ -432,12 +320,5 @@ public class StockChartManager implements RadioGroup.OnCheckedChangeListener {
                 updateTopLableByKeyLine(keyLineItem, isCancel);
         }
     };
-
-    public void destroryRequest() {
-        if (minuteManager != null)
-            minuteManager.destroyRequest();
-        if (keyLineManager != null)
-            keyLineManager.destroyRequest();
-    }
 
 }

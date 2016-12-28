@@ -1,6 +1,5 @@
-package com.openxu.chartlib.minute;
+package com.openxu.chartlib.request;
 
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -12,29 +11,24 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.openxu.chartlib.config.Constants;
-import com.openxu.chartlib.minute.bean.MinuteParame;
-import com.openxu.chartlib.minute.bean.MinuteResult;
-import com.openxu.chartlib.minute.bean.MinutesBean;
-import com.openxu.chartlib.minute.bean.PankouData;
+import com.openxu.chartlib.manager.MinuteManager;
+import com.openxu.chartlib.bean.MinuteParame;
+import com.openxu.chartlib.bean.MinuteResult;
+import com.openxu.chartlib.bean.MinutesBean;
+import com.openxu.chartlib.bean.PankouData;
 import com.openxu.chartlib.testdata.TestData;
 import com.openxu.chartlib.utils.CommonUtil;
 import com.openxu.chartlib.utils.DateUtil;
 import com.openxu.chartlib.utils.GlFontUtil;
 import com.openxu.chartlib.utils.JSONUtil;
 import com.openxu.chartlib.utils.LogUtil;
-import com.zhy.http.okhttp.OkHttpUtils;
-import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
-import okhttp3.Call;
-import okhttp3.Request;
 
 /**
  * author : openXu
@@ -63,10 +57,7 @@ public class MinuteRequest {
     //单个线程的线程池
     private ScheduledExecutorService singleThreadPool;
 
-
     private volatile boolean isDestory=false;
-
-    private boolean isRequesting=false;
 
     public MinuteRequest(MinuteManager minuteManager, String symbol, boolean isZhishu, float preprice){
         this.symbol = symbol;
@@ -107,65 +98,38 @@ public class MinuteRequest {
      * @param symbol
      */
     private void getMinuteData(String symbol) {
-
-        HashMap<String, String> p = new HashMap<String,String>();
-        p.put("symbol", symbol);
-        Log.v(TAG, "获取分时数据："+Constants.MinuteRequetUrl+"?symbol="+symbol);
-        OkHttpUtils.post()
-                .url(Constants.MinuteRequetUrl)
-                .tag(TAG)
-                //TODO 参数
-//                .params(p)
-                .build()
-                .execute(new StringCallback() {
-                    @Override
-                    public void onBefore(Request request) {
-                        isRequesting=true;
+        //TODO 模拟请求数据
+        new Thread(){
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                    String response= TestData.MinuteData; //使用测试数据
+                    Log.i(TAG, "返回分时数据："+response);
+                    //{"code":1,"msg":"success","data":[[1482715800000,20.13,408500],...,[1482729540000,20.55,0]]}
+                    boolean isStop;
+                    parame.pricedivider =-1;
+                    MinuteResult result=null;
+                    try {
+                        //解析分时数据
+                        result = (MinuteResult) parseData(response);
+                    }catch (Exception e){
                     }
-                    @Override
-                    public void onError(Call call, Exception e) {
-                        if(isDestory)return;
-                        minuteManager.setData(datas,parame,false);
+                    if (result != null&&result.getData()!=null && result.getData().size()>0) {
+                        datas = result.getData();
+                        //根据分时数据计算图表绘制的各项参数（最高价、最低价、振幅、最大成交量等）
+                        computParmas();
+                        isStop=false;
+                    }else{
+                        isStop = true;
                     }
-                    @Override
-                    public void onResponse(String response) {
-                        //TODO 如果使用真实接口，请注释下面一段代码
-                        response = TestData.MinuteData; //使用测试数据
-                        Log.i(TAG, "返回分时数据："+response);
-                        //{"code":1,"msg":"success","data":[[1482715800000,20.13,408500],...,[1482729540000,20.55,0]]}
-                        boolean isStop = false;
-                        if (response != null) {
-                            parame.pricedivider =-1;
-                            MinuteResult result=null;
-                            try {
-                                //解析分时数据
-                                result = (MinuteResult) parseData(response);
-                            }catch (Exception e){
-                            }
-                            if (result != null&&result.getData()!=null && result.getData().size()>0) {
-                                datas = result.getData();
-                                //根据分时数据计算图表绘制的各项参数（最高价、最低价、振幅、最大成交量等）
-                                computParmas();
-                                isStop=false;
-                            }else{
-                                isStop = true;
-                            }
-                            if(isDestory)return;
-                            minuteManager.setData(datas,parame,isStop);
-                        }else{
-                            if(isDestory)return;
-                            minuteManager.setData(datas,parame,isStop);
-                        }
-                    }
-
-                    @Override
-                    public void onAfter() {
-                        isRequesting=false;
-                    }
-                });
-
+                    if(isDestory)return;
+                    minuteManager.setData(datas,parame,isStop);
+                }catch (Exception e){
+                }
+            }
+        }.start();
     }
-
 
     /** 分时数据解析*/
     private Object parseData(String data) {
@@ -272,47 +236,23 @@ public class MinuteRequest {
      * @param symbol
      */
     private void getPankoudata(String symbol){
-        HashMap<String, String> p = new HashMap<>();
-        p.put("symbol", symbol);
-        Log.v(TAG, "获取盘口数据："+Constants.PankouRequestUrl+"?symbol="+symbol);
-        OkHttpUtils.post()
-                .url(Constants.PankouRequestUrl)
-                .tag(TAG)
-                //TODO 参数
-//                .params(p)
-                .build()
-                .execute(new StringCallback() {
-                    @Override
-                    public void onError(Call call, Exception e) {
-                        if(isDestory)return;
-                        minuteManager.setPankouData(null);
-                    }
-                    @Override
-                    public void onResponse(String response) {
-                        //TODO 如果使用真实接口，请注释下面一段代码
-                        //使用测试数据
-                        response = TestData.PankouData;
-                        Log.i(TAG, "返回盘口数据："+response);
-
-                        if (TextUtils.isEmpty(response)) {
-                            PankouData pd = JSONUtil.jsonToBean(response,PankouData.class);
-                            if(pd!=null && pd.getData() !=null){
-                                PankouData.Data pankouData = pd.getData();
-                                if(isDestory)return;
-                                minuteManager.setPankouData(pankouData);
-                            }else{
-                                //盘口数据为空
-                                if(isDestory)return;
-                                minuteManager.setPankouData(null);
-                            }
-                        }else{
-                            //服务没有返回数据
-                            if(isDestory)return;
-                            minuteManager.setPankouData(null);
-                        }
-                    }
-
-                });
+        //TODO 模拟请求数据
+        new Thread(){
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                    String response = TestData.PankouData; //使用测试数据
+                    Log.i(TAG, "返回盘口数据："+response);
+                    PankouData pd = JSONUtil.jsonToBean(response,PankouData.class);
+                    PankouData.Data pankouData = pd.getData();
+                    if(isDestory)
+                        return;
+                    minuteManager.setPankouData(pankouData);
+                }catch (Exception e){
+                }
+            }
+        }.start();
     }
 
 

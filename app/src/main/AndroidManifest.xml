@@ -21,6 +21,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".MinuteActivity"
+            android:screenOrientation="landscape"/>
+        <activity android:name=".KlineActivity"
+            android:screenOrientation="landscape"/>
     </application>
 
 </manifest>

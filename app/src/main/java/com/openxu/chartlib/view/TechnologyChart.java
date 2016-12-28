@@ -1,4 +1,4 @@
-package com.openxu.chartlib.kline.chart;
+package com.openxu.chartlib.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -12,16 +12,15 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 import com.openxu.chartlib.config.Constants;
-import com.openxu.chartlib.kline.entity.KLineParame;
-import com.openxu.chartlib.kline.entity.KLineTechItem;
-import com.openxu.chartlib.kline.entity.KLineTechParam;
-import com.openxu.chartlib.kline.entity.KLineType;
-import com.openxu.chartlib.kline.entity.KeyLineItem;
+import com.openxu.chartlib.bean.KLineParame;
+import com.openxu.chartlib.bean.KLineTechItem;
+import com.openxu.chartlib.bean.KLineTechParam;
+import com.openxu.chartlib.bean.KLineType;
+import com.openxu.chartlib.bean.KeyLineItem;
 import com.openxu.chartlib.utils.CommonUtil;
 import com.openxu.chartlib.utils.GlFontUtil;
 import com.openxu.chartlib.utils.LogUtil;
 import com.openxu.chartlib.utils.TouchEventUtil;
-import com.openxu.chartlib.view.Chart;
 
 import java.util.List;
 

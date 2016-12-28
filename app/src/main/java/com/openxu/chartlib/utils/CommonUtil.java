@@ -10,7 +10,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.openxu.chartlib.config.Constants;
-import com.openxu.chartlib.kline.entity.KeyLineItem;
+import com.openxu.chartlib.bean.KeyLineItem;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
