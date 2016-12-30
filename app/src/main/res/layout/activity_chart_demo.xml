@@ -1,24 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="20dip"
-    android:gravity="center"
-    android:orientation="vertical"
-    tools:context=".ChartDemoActivity">
+    android:layout_height="match_parent">
+    <!--股票基本信息展示-->
+    <include
+        layout="@layout/layout_baseinfo"
+        android:id="@+id/layout_baseinfo"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        android:layout_above="@+id/ll_btn"
+        android:layout_below="@+id/layout_baseinfo">
+        <!--分时图-->
+        <include
+            android:id="@+id/layout_minute"
+            layout="@layout/layout_minute"/>
+        <!--K线图-->
+        <include
+            android:id="@+id/layout_keyline"
+            layout="@layout/layout_keyline"
+            />
 
-
-    <Button
-        android:id="@+id/btn_minute"
+    </FrameLayout>
+    <LinearLayout
+        android:id="@+id/ll_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="分时图"/>
-
-    <Button
-        android:id="@+id/btn_kline"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dip"
-        android:text="K线图"/>
-</LinearLayout>
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/btn_minute"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="分时图"/>
+        <Button
+            android:id="@+id/btn_kline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="K线图"/>
+    </LinearLayout>
+</RelativeLayout>

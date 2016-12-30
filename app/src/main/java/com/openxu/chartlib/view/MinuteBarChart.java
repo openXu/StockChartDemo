@@ -117,7 +117,7 @@ public class MinuteBarChart extends Chart {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-       /* isDrawFinished = false;
+ isDrawFinished = false;
 
         initFrameRect();
         drawGridLine(canvas);
@@ -127,7 +127,7 @@ public class MinuteBarChart extends Chart {
         }
         drawLabelY(canvas);
         drawBars(canvas);
-        isDrawFinished = true;*/
+        isDrawFinished = true;
     }
 
     /**1、初始化图表矩形*/

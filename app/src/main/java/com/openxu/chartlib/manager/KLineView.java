@@ -1,8 +1,7 @@
-package com.openxu.chartlib.view;
+package com.openxu.chartlib.manager;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
@@ -11,14 +10,18 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.openxu.chart.R;
-import com.openxu.chartlib.config.Constants;
 import com.openxu.chartlib.bean.KLineParame;
 import com.openxu.chartlib.bean.KLineTechParam;
 import com.openxu.chartlib.bean.KLineType;
 import com.openxu.chartlib.bean.KeyLineItem;
-import com.openxu.chartlib.manager.KeyLineManager;
+import com.openxu.chartlib.config.Constants;
 import com.openxu.chartlib.request.KeylineRequest;
 import com.openxu.chartlib.utils.TouchEventUtil;
+import com.openxu.chartlib.view.Chart;
+import com.openxu.chartlib.view.ChartContainerView;
+import com.openxu.chartlib.view.FocusChart;
+import com.openxu.chartlib.view.KeyLineChart;
+import com.openxu.chartlib.view.TechnologyChart;
 
 import java.util.List;
 
@@ -32,7 +35,7 @@ import java.util.List;
  * version : 1.0
  * class describe： 横竖屏K线管理类的基类
  */
-public class KeyLineView implements RadioGroup.OnCheckedChangeListener{
+public class KLineView implements RadioGroup.OnCheckedChangeListener{
 
     protected KeyLineChart keyLineChart;            //K线图
     protected FocusChart focusView;                 //焦点图
@@ -56,8 +59,8 @@ public class KeyLineView implements RadioGroup.OnCheckedChangeListener{
     private ChartContainerView chartContainerView;    //控制缩放的容器
     private KeylineRequest keylineRequest;
 
-    private KeyLineManager.FQ fqtype;
-    private KeyLineManager keyLineManager=null;
+    private KLineManager.FQ fqtype;
+    private KLineManager keyLineManager=null;
 
 
     /**
@@ -69,10 +72,10 @@ public class KeyLineView implements RadioGroup.OnCheckedChangeListener{
     }
 
 
-    public KeyLineView (KeyLineManager keyLineManager, final Context context, View rootview,
-                           TouchEventUtil.OnFoucsChangedListener foucsChangedListener,
-                           TouchEventUtil.OnDragChangedListener dragChangedListener,
-                           ChartContainerView.OnScalListener scalListener){
+    public KLineView(KLineManager keyLineManager, final Context context, View rootview,
+                     TouchEventUtil.OnFoucsChangedListener foucsChangedListener,
+                     TouchEventUtil.OnDragChangedListener dragChangedListener,
+                     ChartContainerView.OnScalListener scalListener) {
         this.context = context;
         this.rootView = rootview;
 
@@ -80,7 +83,7 @@ public class KeyLineView implements RadioGroup.OnCheckedChangeListener{
         this.keyLineChart = (KeyLineChart) rootview.findViewById(R.id.klinechart);
         this.technologyChart = (TechnologyChart) rootview.findViewById(R.id.techchart);
         this.focusView = (FocusChart) rootview.findViewById(R.id.focusview);
-        this.keyLineManager =keyLineManager;
+        this.keyLineManager = keyLineManager;
         this.rootView.setVisibility(View.GONE);
         this.chartContainerView = (ChartContainerView) rootview.findViewById(R.id.landkeylinelayout);
         furadio = (RadioGroup) rootview.findViewById(R.id.fq_group);
@@ -118,17 +121,12 @@ public class KeyLineView implements RadioGroup.OnCheckedChangeListener{
         keyLineChart.setKeyLineParameInitListener(new KeyLineParameInitListener() {
             @Override
             public void onPrameInit(KLineParame parame, boolean isDragging, int offset) {
-                if(isDragging)
-                    technologyChart.ondrag(parame,offset);
+                if (isDragging)
+                    technologyChart.ondrag(parame, offset);
                 else
-                    technologyChart.setData(datas,parame);
+                    technologyChart.setData(datas, parame);
             }
         });
-
-    }
-    public void onsaveInstanceState(Bundle bundle){
-        keyLineChart.saveInstanceState();
-        technologyChart.saveInstanceState();
     }
 
     public void setKeylineRequest(KeylineRequest keylineRequest){
@@ -282,16 +280,16 @@ public class KeyLineView implements RadioGroup.OnCheckedChangeListener{
     public void onCheckedChanged(RadioGroup group, int checkedId) {
         if (group.getId() == furadio.getId()) {
             if (checkedId == R.id.bfq_btn) {
-                fqtype = KeyLineManager.FQ.fq;
+                fqtype = KLineManager.FQ.fq;
 
             } else if (checkedId == R.id.qfq_btn) {
-                fqtype = KeyLineManager.FQ.qfq;
+                fqtype = KLineManager.FQ.qfq;
 
             } else if (checkedId == R.id.hfq_btn) {
-                fqtype = KeyLineManager.FQ.hfq;
+                fqtype = KLineManager.FQ.hfq;
 
             } else {
-                fqtype = KeyLineManager.FQ.fq;
+                fqtype = KLineManager.FQ.fq;
 
             }
             keyLineManager.switchKlineType(fqtype);

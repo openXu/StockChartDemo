@@ -11,27 +11,22 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.openxu.chartlib.config.Constants;
-import com.openxu.chartlib.bean.KeylineData;
 import com.openxu.chartlib.bean.KLineParame;
 import com.openxu.chartlib.bean.KLineTechParam;
 import com.openxu.chartlib.bean.KLineType;
 import com.openxu.chartlib.bean.KeyLineItem;
+import com.openxu.chartlib.bean.KeylineData;
 import com.openxu.chartlib.bean.KlineResult;
-import com.openxu.chartlib.manager.KeyLineManager;
+import com.openxu.chartlib.config.Constants;
+import com.openxu.chartlib.manager.KLineManager;
 import com.openxu.chartlib.testdata.TestData;
 import com.openxu.chartlib.utils.CommonUtil;
 import com.openxu.chartlib.utils.DateUtil;
-import com.zhy.http.okhttp.OkHttpUtils;
-import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import okhttp3.Call;
-import okhttp3.Request;
 
 /**
  * author : openXu
@@ -47,7 +42,7 @@ public class KeylineRequest {
 
     private String TAG = "KeylineRequest";
 
-    private KeyLineManager keyLineManager;
+    private KLineManager keyLineManager;
 
     private ArrayList<KeyLineItem> datas;         //K线图数据集合
     private KLineParame parame = new KLineParame();
@@ -57,7 +52,7 @@ public class KeylineRequest {
     private KLineType keylineType;                //技术指标枚举
     private KeylineData keylineData;
 
-    public KeylineRequest(KeyLineManager keyLineManager) {
+    public KeylineRequest(KLineManager keyLineManager) {
         this.keyLineManager = keyLineManager;
     }
 
@@ -82,58 +77,41 @@ public class KeylineRequest {
         p.put("division", fq);      //复权
         Log.v(TAG, "获取Kline数据："+Constants.KeylineRequestUrl+"?symbol="+symbol+"&period="+period+"&symbol="+symbol);
 
-        OkHttpUtils.post()
-                .url(Constants.KeylineRequestUrl)
-                .tag(TAG)
-                .params(p)
-                .build()
-                .execute(new StringCallback() {
-                    @Override
-                    public void onBefore(Request request) {
-                        isRequesting = true;
-                    }
-                    @Override
-                    public void onError(Call call, Exception e) {
-                        if (isDestoryed) return;
-                        keyLineManager.setkLineTechParam(kLineTechParam);
-                        keyLineManager.setData(datas, parame, false);
-                    }
-                    @Override
-                    public void onResponse(String response) {
-                        boolean isStop;
-                        KlineResult result = null;
-                        try {
-                            //TODO 如果使用真实接口，请注释下面一段代码
-                            //使用测试数据
-                            response = TestData.kLineData;
-                            Log.i(TAG, "返回Kline数据："+response);
+        new Thread(){
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                    String  response = TestData.kLineData; //使用测试数据
+                    boolean isStop;
+                    KlineResult result = null;
+                    try {
+                        Log.i(TAG, "返回Kline数据："+response);
 
-                            GsonBuilder gsonBuilder = new GsonBuilder();
-                            gsonBuilder.registerTypeAdapter(KlineResult.class, new KlineDeserializer());
-                            Gson gson = gsonBuilder.create();
-                            Object obj = gson.fromJson(response, KlineResult.class);
-                            if(obj!=null)
+                        GsonBuilder gsonBuilder = new GsonBuilder();
+                        gsonBuilder.registerTypeAdapter(KlineResult.class, new KlineDeserializer());
+                        Gson gson = gsonBuilder.create();
+                        Object obj = gson.fromJson(response, KlineResult.class);
+                        if(obj!=null)
                             result = (KlineResult) obj;
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        if (result != null && result.getData() != null && result.getData().size() > 0) {
-                            datas = result.getData();
-                            isStop = false;
-                        } else {
-                            isStop = true;
-                        }
-                        if (isDestoryed)
-                            return;
-                        keyLineManager.setkLineTechParam(kLineTechParam);
-                        keyLineManager.setData(datas, parame, isStop);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
+                    if (result != null && result.getData() != null && result.getData().size() > 0) {
+                        datas = result.getData();
+                        isStop = false;
+                    } else {
+                        isStop = true;
+                    }
+                    if (isDestoryed)
+                        return;
+                    keyLineManager.setkLineTechParam(kLineTechParam);
+                    keyLineManager.setData(datas, parame, isStop);
+                }catch (Exception e){
+                }
+            }
+        }.start();
 
-                    @Override
-                    public void onAfter() {
-                        isRequesting = false;
-                    }
-                });
     }
 
 
@@ -256,14 +234,8 @@ public class KeylineRequest {
      * 销毁请求，清空缓存
      */
     public void destroy() {
-       cancelRequest();
-    }
-    /**
-     * 销毁请求
-     */
-    public void cancelRequest(){
         isDestoryed = true;
-        OkHttpUtils.getInstance().cancelTag(TAG);
+        //TODO 销毁请求
     }
 
 }

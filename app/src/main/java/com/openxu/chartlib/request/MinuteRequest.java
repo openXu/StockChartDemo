@@ -49,7 +49,6 @@ public class MinuteRequest {
     private float permaxmin;      //最高价和最低价的差值
     private MinuteManager minuteManager;
     private MinuteParame parame;
-    private boolean isZhishu=false;
 
     private List<MinutesBean> datas;
     private MinuteDeserializer minuteDeserializer;
@@ -59,11 +58,10 @@ public class MinuteRequest {
 
     private volatile boolean isDestory=false;
 
-    public MinuteRequest(MinuteManager minuteManager, String symbol, boolean isZhishu, float preprice){
+    public MinuteRequest(MinuteManager minuteManager, String symbol, float preprice){
         this.symbol = symbol;
         this.minuteManager = minuteManager;
         this.preprice = preprice;
-        this.isZhishu=isZhishu;
         this.parame= new MinuteParame();
     }
 
@@ -80,8 +78,7 @@ public class MinuteRequest {
             public void run() {
                 Log.w(TAG, "每30s更新分时图");
                 getMinuteData(symbol);
-                if(!isZhishu)
-                    getPankoudata(symbol);
+                getPankoudata(symbol);
             }
         },0,30*1000, TimeUnit.MILLISECONDS);
     }

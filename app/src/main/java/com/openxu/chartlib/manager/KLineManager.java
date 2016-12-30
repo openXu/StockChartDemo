@@ -1,19 +1,17 @@
 package com.openxu.chartlib.manager;
 
-import android.app.Activity;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 
 import com.openxu.chart.R;
-import com.openxu.chartlib.config.Constants;
-import com.openxu.chartlib.view.KeyLineView;
-import com.openxu.chartlib.request.KeylineRequest;
+import com.openxu.chartlib.StockChartManager;
 import com.openxu.chartlib.bean.KLineParame;
 import com.openxu.chartlib.bean.KLineTechParam;
 import com.openxu.chartlib.bean.KLineType;
 import com.openxu.chartlib.bean.KeyLineItem;
-import com.openxu.chartlib.utils.LogUtil;
+import com.openxu.chartlib.config.Constants;
+import com.openxu.chartlib.request.KeylineRequest;
 import com.openxu.chartlib.utils.TouchEventUtil;
 import com.openxu.chartlib.view.ChartContainerView;
 
@@ -29,18 +27,15 @@ import java.util.ArrayList;
  * version : 1.0
  * class describe：K线管理类,主要是管理横屏和竖屏K线的不同处理
  */
-public class KeyLineManager extends BaseManager{
+public class KLineManager extends BaseChartManager{
 
-
-    private String TAG = "KeyLineManager";
-
-    private KeyLineView keyLineView;
+    private KLineView viewManager;
     private KeylineRequest keylineRequest;
     private KLineParame parame;
     private ArrayList<KeyLineItem> datas = null;
     private boolean isStop = false;
     private KLineTechParam kLineTechParam = null;
-    private BaseManager.OnFocusChangeListener outListener=null;
+    private StockChartManager.OnFocusChangeListener outListener=null;
 
     private Handler handler = new Handler() {
         @Override
@@ -48,50 +43,50 @@ public class KeyLineManager extends BaseManager{
             super.handleMessage(msg);
             switch (msg.what) {
                 case Constants.FocusCancelFlag:
-                    keyLineView.updateFocusView(true, null);
+                    viewManager.updateFocusView(true, null);
                     outListener.onfocusChange(true,datas.get(datas.size()-1),null);
                     break;
                 case Constants.FocusChangeFlag:
                     KeyLineItem keyLineItem = (KeyLineItem) msg.obj;
-                    keyLineView.updateFocusView(false, keyLineItem);
+                    viewManager.updateFocusView(false, keyLineItem);
                     outListener.onfocusChange(false,keyLineItem,null);
                     break;
                 case Constants.ChartRefresh:            //刷新数据
                     setLoadingViewVisibilty(View.GONE);
 //                    radioGroup.setEnabled(true);
 //                    keyLineView.getLoadingView().setVisibility(View.GONE);
-                    keyLineView.updateChartView(parame, datas);
+                    viewManager.updateChartView(parame, datas);
                     if(datas==null||datas.size()==0)return;
                     outListener.onfocusChange(true,datas.get(datas.size()-1),null);
                     break;
                 case Constants.DragChangeFlag:        //
-                    keyLineView.drag((Float) msg.obj);
+                    viewManager.drag((Float) msg.obj);
                     break;
                 case Constants.DragRecetFlag:
-                    keyLineView.endData();
+                    viewManager.endData();
                     if((Float)msg.obj==Constants.EPSILON) Constants.isEnd = false;
                     break;
                 case Constants.ScaleChartFlag:        //缩放
-                    keyLineView.setScale((Float) msg.obj, msg.arg1 == 0 ? true : false);
+                    viewManager.setScale((Float) msg.obj, msg.arg1 == 0 ? true : false);
                     break;
             }
         }
     };
 
 
-    public KeyLineManager(final Activity activity, String symbol) {
-        super(activity, symbol);
-        this.type = KLINETYPE;
-
-        View landView = rootView.findViewById(R.id.keylinelayout);
-
-        keyLineView = new KeyLineView(this,rootView.getContext(), landView,
+    public KLineManager(View rootView) {
+        View layout_keyline = rootView.findViewById(R.id.layout_keyline);
+        viewManager = new KLineView(this,rootView.getContext(), layout_keyline,
                 foucsChangedListener, dragChangedListener, scalListener);
-        keyLineView.setkLineType(KLineType.VOL);
+        viewManager.setkLineType(KLineType.VOL);
     }
 
-    /**请求数据的参数*/
+    public void setOnTopLableChangeListener(StockChartManager.OnFocusChangeListener outlistener){
+        this.outListener=outlistener;
+    }
 
+
+    /**请求数据的参数*/
     private String symbol;           //股票代码
     private String period = "daily"; //K线图频率（日、周、月）
     private String fq = "div";       //复权
@@ -155,34 +150,35 @@ public class KeyLineManager extends BaseManager{
                 period = "daily";
                 break;
         }
-        keyLineView.stopFline();
-    }
-
-    @Override
-    public void setLoadingViewVisibilty(int Visibilty) {
-        keyLineView.getLoadingView().setVisibility(Visibilty);
+        viewManager.stopFline();
     }
 
     /**显示、请求数据*/
     @Override
     public void showChart() {
-        LogUtil.v(TAG, "显示K线图");
         if (keylineRequest == null) {
             keylineRequest = new KeylineRequest(this);
-            keyLineView.setKeylineRequest(keylineRequest);
+            viewManager.setKeylineRequest(keylineRequest);
         }
-        keylineRequest.getKlineData(keyLineView.getKeyLineType(),symbol, period, fq);
+        keylineRequest.getKlineData(viewManager.getKeyLineType(),symbol, period, fq);
+    }
+    @Override
+    public void destroyRequest(){
+        if(keylineRequest!=null)
+            keylineRequest.destroy();
+    }
+    @Override
+    protected View getLoadingView() {
+        return viewManager.getLoadingView();
+    }
+    @Override
+    public void setVisible(int visibilty) {
+        viewManager.setVisibility(visibilty);
     }
 
     public void setkLineTechParam(KLineTechParam kLineTechParam) {
         this.kLineTechParam = kLineTechParam;
-        keyLineView.setkLineTechParam(kLineTechParam);
-    }
-
-    @Override
-    public void cancelRequest(){
-        if(keylineRequest!=null)
-        keylineRequest.destroy();
+        viewManager.setkLineTechParam(kLineTechParam);
     }
 
     public void setData(ArrayList<KeyLineItem> datas, KLineParame parame, boolean isStop) {
@@ -191,6 +187,7 @@ public class KeyLineManager extends BaseManager{
         this.isStop = isStop;
         handler.sendEmptyMessage(Constants.ChartRefresh);
     }
+
 
     /**焦点监听*/
     private TouchEventUtil.OnFoucsChangedListener foucsChangedListener =

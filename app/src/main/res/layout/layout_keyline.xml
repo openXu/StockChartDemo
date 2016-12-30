@@ -87,7 +87,7 @@
 
         <include
             android:id="@+id/select_item_lienar"
-            layout="@layout/keyline_types_view"
+            layout="@layout/layout_keyline_types"
             android:layout_width="60dp"
             android:layout_height="match_parent"
             android:layout_alignTop="@+id/landkeylinelayout"

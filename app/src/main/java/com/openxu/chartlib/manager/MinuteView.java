@@ -1,4 +1,4 @@
-package com.openxu.chartlib.view;
+package com.openxu.chartlib.manager;
 
 import android.content.Context;
 import android.view.Gravity;
@@ -14,7 +14,11 @@ import com.openxu.chartlib.bean.MinutesBean;
 import com.openxu.chartlib.bean.PankouData;
 import com.openxu.chartlib.config.Constants;
 import com.openxu.chartlib.utils.CommonUtil;
+import com.openxu.chartlib.utils.LogUtil;
 import com.openxu.chartlib.utils.TouchEventUtil;
+import com.openxu.chartlib.view.FocusChart;
+import com.openxu.chartlib.view.MinuteBarChart;
+import com.openxu.chartlib.view.MinuteHourChart;
 
 import java.util.List;
 
@@ -28,14 +32,15 @@ import java.util.List;
  * version : 1.0
  * class describe：分时图各部件组织类
  */
-public class MinuteView {
+public class MinuteView{
+    private String TAG= "MinuteView";
 
     protected View rootView;
     protected Context context;
 
     private View loadingView;
     private TextView tv_junxian, tv_shijian, tv_fenshi;
-    private LinearLayout fenshilinear;
+    private LinearLayout ll_lable;
 
     protected MinuteHourChart minuteHourView;   //分时图控件
     protected MinuteBarChart barView;           //底部状态图控件
@@ -44,12 +49,6 @@ public class MinuteView {
     private View pankouline;
 
     protected MinuteParame parame;
-
-    public boolean isZhishu=false;
-
-    public int getStart() {
-        return Constants.chartStart;
-    }
 
     public MinuteView(final Context context, View rootview,
                       TouchEventUtil.OnFoucsChangedListener foucsChangedListener){
@@ -67,6 +66,9 @@ public class MinuteView {
         tv_junxian = (TextView) rootview.findViewById(R.id.tv_junxian);
         tv_shijian = (TextView) rootview.findViewById(R.id.tv_shijian);
         tv_fenshi = (TextView) rootview.findViewById(R.id.tv_fenshi);
+        tv_fenshi.setTextColor(Constants.C_M_DATA_LINE);
+        tv_junxian.setTextColor(Constants.C_M_AVG_LINE);
+        tv_shijian.setTextColor(Constants.C_LABLE_TEXT);
 
         minuteHourView.setEnable(true);
         minuteHourView.setLongMoveEnable(false);
@@ -78,15 +80,11 @@ public class MinuteView {
         FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,10);
         lp.gravity=Gravity.CENTER;
         frameLayout.setLayoutParams(lp);
-//        frameLayout.setPadding(0,2,0,2);
-//        TextView line =new TextView(context);
-//        line.setBackgroundColor(Constants.gridlineColor);
-//        line.setLayoutParams(new FrameLayout.LayoutParams(
-//                FrameLayout.LayoutParams.MATCH_PARENT,1));
-//        frameLayout.addView(line);
         return frameLayout;
     }
-
+    public int getStart() {
+        return Constants.chartStart;
+    }
     /**
      * 绑定盘口数据
      */
@@ -96,6 +94,7 @@ public class MinuteView {
         View view = null;
         if (pankouData == null) pankouData = new PankouData.Data();
         for (int i = 0; i < 10; i++) {
+            LogUtil.i(TAG, "设置盘口view");
             switch (i) {
                 case 0:
                     view = bondPankouData("卖" + 5,
@@ -187,7 +186,7 @@ public class MinuteView {
     }
 
     private View bondPankouData(String lable1, String lable2, String lable3, int c1, int c2, int c3){
-        View view = LayoutInflater.from(context).inflate(R.layout.bug_sell_item, null);
+        View view = LayoutInflater.from(context).inflate(R.layout.itemb_ug_sell, null);
         ((TextView) view.findViewById(R.id.label1)).setText(lable1);
         ((TextView) view.findViewById(R.id.label2)).setText(lable2);
         ((TextView) view.findViewById(R.id.label3)).setText(lable3);
@@ -206,6 +205,7 @@ public class MinuteView {
     public void updateFocus(MinutesBean minutesBean, boolean isEnd) {
         updateTopLable(minutesBean);
     }
+
 
     public void updateFocusView(boolean cancelflag,MinutesBean minutesBean){
         if(cancelflag) {
@@ -238,18 +238,13 @@ public class MinuteView {
         this.parame = parame;
         //重绘状态图
         barView.setData(data,parame);
-        //更新分时图顶部价格和时间数据（默认最后一个数据，也就是最新的数据信息）
+        //更新分时均线数量（横屏）
         updateTopLable(data==null||data.size()==0 ? null : data.get(data.size()-1));
+
     }
 
     public void setPrePrice(float preprice) {
-//        this.minuteHourView.setPrePrice(preprice);
         this.barView.setPrePrice(preprice);
-    }
-
-    public void setIsZhishu(boolean isZhishu){
-        this.isZhishu=isZhishu;
-        pankoulinear.setVisibility(isZhishu?View.GONE:View.VISIBLE);
     }
 
     public void setIsStop(boolean isStop) {
@@ -261,36 +256,16 @@ public class MinuteView {
         rootView.setVisibility(visibility);
     }
 
-    public void setOrientation(int orientation) {
-        focusView.setFrameinit(false);
-    }
-
     protected void updateTopLable(MinutesBean minutesBean){
-        if(minutesBean==null)return;
-        if (fenshilinear == null) {
-            fenshilinear = (LinearLayout) rootView.findViewById(R.id.fenshilinear);
-            if(!isZhishu){
-                fenshilinear.setPadding(getStart(), 0, CommonUtil.dip2px(context,116), Constants.S_LABLE_CHART_DIS);
-            }else{
-                fenshilinear.setPadding(getStart(), 0, 0, Constants.S_LABLE_CHART_DIS);
-            }
+        if(minutesBean==null)
+            return;
+        if (ll_lable == null) {
+            ll_lable = (LinearLayout) rootView.findViewById(R.id.fenshilinear);
+            ll_lable.setPadding(getStart(), 0, CommonUtil.dip2px(context,116), Constants.S_LABLE_CHART_DIS);
         }
         tv_fenshi.setText("分时: " + (minutesBean.cjprice==Constants.EPSILON ? "--" : Constants.twoPointFormat.format(minutesBean.cjprice)));
-        tv_fenshi.setTextColor(Constants.C_M_DATA_LINE);
         tv_junxian.setText("均线: " + (minutesBean.avprice==Float.NaN ? "--" : Constants.twoPointFormat.format(minutesBean.avprice)));
-        tv_junxian.setTextColor(Constants.C_M_AVG_LINE);
         tv_shijian.setText(minutesBean.time);
-        tv_shijian.setTextColor(Constants.C_LABLE_TEXT);
     }
 
-
-    public MinuteBarChart getMinuteBarChart(){
-        return this.barView;
-    }
-    public MinuteHourChart getMinuteHourChart(){
-        return this.minuteHourView;
-    }
-    public LinearLayout getPankoulinear(){
-        return this.pankoulinear;
-    }
 }

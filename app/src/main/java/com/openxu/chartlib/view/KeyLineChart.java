@@ -14,6 +14,7 @@ import android.view.View;
 import com.openxu.chartlib.config.Constants;
 import com.openxu.chartlib.bean.KLineParame;
 import com.openxu.chartlib.bean.KeyLineItem;
+import com.openxu.chartlib.manager.KLineView;
 import com.openxu.chartlib.utils.CommonUtil;
 import com.openxu.chartlib.utils.GlFontUtil;
 import com.openxu.chartlib.utils.LogUtil;
@@ -37,7 +38,7 @@ public class KeyLineChart extends Chart {
     private List<KeyLineItem> keyLineItems;
 
     //K线参数初始化完毕后回调
-    private KeyLineView.KeyLineParameInitListener keyLineParameInitListener;
+    private KLineView.KeyLineParameInitListener keyLineParameInitListener;
 
     private boolean initFinished = false;
 
@@ -109,7 +110,7 @@ public class KeyLineChart extends Chart {
     }
 
 
-    public void setKeyLineParameInitListener(KeyLineView.KeyLineParameInitListener keyLineParameInitListener) {
+    public void setKeyLineParameInitListener(KLineView.KeyLineParameInitListener keyLineParameInitListener) {
         this.keyLineParameInitListener = keyLineParameInitListener;
     }
 
@@ -357,6 +358,7 @@ public class KeyLineChart extends Chart {
     private void computeNumber() {
         if(datasize==0)
             return;
+        LogUtil.v(TAG, "ONEL："+ONEL);
         number = (getWidth() - start) / ONEL;
         LogUtil.v(TAG, "图表总共能画number个k线实体："+number+"   总共有datasize个数据："+datasize);
         if (number > datasize) {
